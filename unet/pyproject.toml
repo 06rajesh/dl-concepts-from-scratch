@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "unet-dl-concept"
+version = "0.1.0"
+description = ""
+authors = ["rajesh.baidya <rajesh.baidya@dkfz-heidelberg.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
