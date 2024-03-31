@@ -1,33 +1,10 @@
 
-
-def get_stats(ids: list):
-    counts = {}
-    # zip: Pythonic way to iterate consecutive elements, create tuple from
-    # two list [i, ..] [i+1,...]
-    for pair in zip(ids, ids[1:]):
-        counts[pair] = counts.get(pair, 0) + 1
-    return counts
-
-
-def merge(ids, pair, idx):
-    # in the list of ints (ids), replace all consecutive occurences of pair with the new token idx
-    newids = []
-    i = 0
-    while i < len(ids):
-        # if we are not at the very last position AND the pair matches, replace it
-        if i < len(ids) - 1 and ids[i] == pair[0] and ids[i+1] == pair[1]:
-            newids.append(idx)
-            i += 2
-        else:
-            newids.append(ids[i])
-            i += 1
-    return newids
-
+from base import get_stats, merge
 
 class BasicTokenizer:
     def __init__(self):
         self.merges = {} # (int, int) -> int
-        self.vocabs = {idx: bytes([idx]) for idx in range(256)}
+        self.vocabs = {}
     
     def train(self, text, vocab_size=276, verbose=False):
         num_merges = vocab_size - 256
@@ -35,6 +12,7 @@ class BasicTokenizer:
         tokens = list(map(int, tokens))
         ids = list(tokens)
 
+        merges = {}
         for i in range(num_merges):
             stats = get_stats(ids)
             pair = max(stats, key=stats.get)
@@ -42,8 +20,9 @@ class BasicTokenizer:
             if verbose:
                 print(f"merging {pair} into a new token {idx}")
             ids = merge(ids, pair, idx)
-            self.merges[pair] = idx
+            merges[pair] = idx
         
+        self.merges = merges
         self._compute_vocabs_after_merge()
         
         if verbose:
@@ -54,10 +33,11 @@ class BasicTokenizer:
     def _compute_vocabs_after_merge(self):
         if len(self.merges) == 0:
             print("No merges found. Can not compute vocabs")
+        vocabs = {idx: bytes([idx]) for idx in range(256)}
         for (p0, p1), idx in self.merges.items():
-            self.vocabs[idx] = self.vocabs[p0] + self.vocabs[p1]
-
-        
+            vocabs[idx] = vocabs[p0] + vocabs[p1]
+        self.vocabs = vocabs
+        return        
     
     def decode(self, ids: list):
         # given ids (list of integers), return Python string
