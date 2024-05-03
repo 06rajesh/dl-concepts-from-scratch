@@ -2,3 +2,5 @@
 .ipynb_checkpoints
 poetry.lock
 dataset
+__pycache__/
+unet/weights/

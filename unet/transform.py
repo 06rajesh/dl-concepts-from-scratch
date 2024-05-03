@@ -12,6 +12,8 @@ def transforms(scale=None, angle=None, flip_prob=None):
         transform_list.append(Rotate(angle))
     if flip_prob is not None:
         transform_list.append(HorizontalFlip(flip_prob))
+    
+    transform_list.append(BinarizeMask())
 
     return Compose(transform_list)
 
@@ -31,7 +33,6 @@ class Scale(object):
         image = rescale(
             image,
             (scale, scale),
-            multichannel=True,
             preserve_range=True,
             mode="constant",
             anti_aliasing=False,
@@ -40,7 +41,6 @@ class Scale(object):
             mask,
             (scale, scale),
             order=0,
-            multichannel=True,
             preserve_range=True,
             mode="constant",
             anti_aliasing=False,
@@ -89,5 +89,14 @@ class HorizontalFlip(object):
 
         image = np.fliplr(image).copy()
         mask = np.fliplr(mask).copy()
+
+        return image, mask
+    
+
+class BinarizeMask(object):
+    def __call__(self, sample):
+        image, mask = sample
+        # mask = np.where(mask>50, 1, 0)
+        mask = np.divide(mask, 255.0)
 
         return image, mask

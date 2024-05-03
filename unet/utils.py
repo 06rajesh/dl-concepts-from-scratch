@@ -8,8 +8,24 @@ def dsc(y_pred, y_true, lcc=True):
     if lcc and np.any(y_pred):
         y_pred = np.round(y_pred).astype(int)
         y_true = np.round(y_true).astype(int)
-        y_pred = largest_connected_component(y_pred)
+        try: 
+            y_pred = largest_connected_component(y_pred)
+        except ValueError as e:
+            y_pred = np.full((y_pred.shape), False, dtype=bool)
+        # y_pred = largest_connected_component(y_pred)
+    # print(np.unique(y_true))
     return np.sum(y_pred[y_true == 1]) * 2.0 / (np.sum(y_pred) + np.sum(y_true))
+
+def dsc_per_volume(validation_pred, validation_true, patient_slice_index):
+    dsc_list = []
+    num_slices = np.bincount([p[0] for p in patient_slice_index])
+    index = 0
+    for p in range(len(num_slices)):
+        y_pred = np.array(validation_pred[index : index + num_slices[p]])
+        y_true = np.array(validation_true[index : index + num_slices[p]])
+        dsc_list.append(dsc(y_pred, y_true))
+        index += num_slices[p]
+    return dsc_list
 
 
 def crop_sample(x):
