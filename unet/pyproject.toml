@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "unet-from-scratch"
+version = "0.1.0"
+description = ""
+authors = ["rajesh.baidya <rajesh.baidya@dkfz-heidelberg.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.0"
+numpy = "^1.18.0"
+scikit-image = "^0.20.0"
+medpy = "0.5.1"
+pandas = "^2.0.0"
+tqdm = "4.66.2"
+torchvision = "^0.17.2"
+ipykernel = "^6.29.4"
+matplotlib = "^3.8.4"
+opencv-python = "^4.9.0.80"
+ipywidgets = "^8.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
